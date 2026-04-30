@@ -1798,6 +1798,35 @@
 
 <script>
   // ============================================================
+  // DIAG — on-page error surface so we can see JS faults without dev tools.
+  // Remove once interactivity is confirmed stable.
+  // ============================================================
+  (function(){
+    var bar = document.createElement('div');
+    bar.id = 'diag-bar';
+    bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;padding:10px 16px;font:500 12px/1.4 ui-monospace,Menlo,monospace;letter-spacing:.04em;color:#fff;background:#7a1f1f;display:none;text-align:left;border-bottom:1px solid #f48b8b';
+    document.body.insertBefore(bar, document.body.firstChild);
+    window.addEventListener('error', function(e){
+      bar.style.display = 'block';
+      bar.textContent = 'JS ERR: ' + (e.message || e.error) + ' — ' + (e.filename || '').split('/').pop() + ':' + e.lineno;
+    });
+    window.addEventListener('unhandledrejection', function(e){
+      bar.style.display = 'block';
+      bar.textContent = 'PROMISE ERR: ' + (e.reason && e.reason.message ? e.reason.message : e.reason);
+    });
+  })();
+  // Tag a heartbeat after init so we can confirm the script ran end-to-end.
+  function diagOK(label){
+    var hb = document.getElementById('diag-bar');
+    if (!hb || hb.style.display === 'block') return;
+    hb.style.background = '#1f4a2a';
+    hb.style.borderBottomColor = '#5cd1a3';
+    hb.style.display = 'block';
+    hb.textContent = 'JS OK · ' + label;
+    setTimeout(function(){ if (hb.textContent.indexOf('JS OK') === 0) hb.style.display = 'none'; }, 4000);
+  }
+
+  // ============================================================
   // ENTRY ORCHESTRATION — cold open → reveal → picked
   // ============================================================
   const entryEl = document.getElementById('entry');
@@ -2171,6 +2200,13 @@
   }
   window.addEventListener('scroll', updateArc, {passive: true});
   updateArc();
+
+  // Heartbeat — confirms the entire script ran without throwing AND surfaces
+  // a quick visual that listeners are attached. Click the chair / a scen row
+  // and the bar will report which path fired.
+  diagOK('init complete · ' + scenButtons.length + ' scen buttons · chair=' + (!!chairCta));
+  if (chairCta) chairCta.addEventListener('click', function(){ diagOK('chair clicked'); }, true);
+  scenButtons.forEach(function(b){ b.addEventListener('click', function(){ diagOK('scen clicked: ' + b.dataset.team); }, true); });
 </script>
 
 <script data-pplx-inline-edit>
