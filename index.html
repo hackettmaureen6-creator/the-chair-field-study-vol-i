@@ -225,6 +225,36 @@
   .entry[data-stage="picked"] .entry-veil,
   .entry[data-stage="swap"] .entry-veil{opacity:1}
 
+  /* Darkroom slug — location + timestamp burned over the entry hero */
+  .entry-stamp{
+    position:absolute;left:32px;bottom:32px;z-index:4;
+    font-family:var(--mono);font-size:10px;font-weight:500;
+    letter-spacing:.32em;text-transform:uppercase;
+    color:rgba(241,236,222,.86);
+    padding:10px 16px;
+    background:rgba(8,12,20,.42);
+    backdrop-filter:blur(10px) saturate(1.05);
+    -webkit-backdrop-filter:blur(10px) saturate(1.05);
+    border:1px solid rgba(241,236,222,.12);
+    border-radius:2px;
+    text-shadow:0 2px 14px rgba(0,0,0,.85);
+    opacity:0;transition:opacity 1.4s ease;
+    pointer-events:none;
+    max-width:min(72vw, 680px);
+  }
+  .entry-stamp::before{
+    content:"";display:inline-block;vertical-align:middle;
+    width:6px;height:6px;border-radius:50%;
+    background:var(--pulse);box-shadow:0 0 10px var(--pulse-edge);
+    margin-right:14px;animation:dotPulse 2.6s ease-in-out infinite;
+  }
+  .entry[data-stage="reveal"] .entry-stamp,
+  .entry[data-stage="swap"] .entry-stamp{opacity:1;transition-delay:.6s}
+  .entry-stamp:empty{display:none}
+  @media (max-width: 860px){
+    .entry-stamp{left:18px;bottom:18px;font-size:9px;letter-spacing:.24em;padding:8px 12px}
+  }
+
   /* ═════════ Cold-open: black room, 3 title cards, pulsing glow ═════════ */
   .cold-open{
     position:absolute;inset:0;z-index:5;
@@ -1111,6 +1141,7 @@
   <!-- Stadium hero (initially hidden, swaps per team) -->
   <div class="entry-image" id="entry-image" data-team="brooklyn"></div>
   <div class="entry-veil"></div>
+  <div class="entry-stamp" id="entry-stamp"></div>
 
   <!-- Cold-open warm-paper layer (sits on top until text resolves) -->
   <div class="cold-open" id="cold-open">
@@ -1756,17 +1787,22 @@
   const scenFoot = document.getElementById('scen-foot');
   const scenButtons = document.querySelectorAll('.scen');
 
-  // Per-team hero images. v0.4 ships with Brooklyn only — others fall back to a tinted placeholder.
+  // Per-team hero images. Stamps are burned over the hero as a darkroom slug
+  // (location · timestamp · date). Clippers ships with text already baked into
+  // the PNG, so its stamp stays empty and we fall to a neutral gradient hero.
   const teamHeroes = {
-    brooklyn: {img: 'brooklyn_hero.png', label: 'Brooklyn, the morning after.', meta: 'Jun 20, 2021 · 6:30 AM ET · Atlantic Avenue'},
-    houston:  {img: '',                  label: 'Houston, the open file.',     meta: 'Live case · stadium hero ships v0.5'},
-    lakers:   {img: '', label: 'Los Angeles, 2014.',          meta: 'Vol. II preview'},
-    sixers:   {img: '', label: 'Philadelphia, the process.',  meta: 'Vol. II preview'},
-    clippers: {img: '', label: 'LA, the second team.',        meta: 'Vol. II preview'},
-    warriors: {img: '', label: 'Golden State, October 2022.', meta: 'Vol. II preview'},
-    timberwolves:{img:'', label:'Minnesota, 2018.',           meta: 'Vol. II preview'},
-    bulls:    {img: '', label: 'Chicago.',                    meta: 'Coming Vol. II'}
+    brooklyn:    {img: 'brooklyn_hero.png',      label: 'Brooklyn, the morning after.', meta: 'Jun 20, 2021 · 6:30 AM ET · Atlantic Avenue', stamp: 'Jun 20, 2021 · 6:30 AM ET · Atlantic Avenue'},
+    houston:     {img: 'Toyota-Center.png',      label: 'Houston, the open file.',      meta: 'Eve of Game 5 vs. LA · Toyota Center',         stamp: 'Apr 30, 2026 · Eve of Game 5 · Toyota Center'},
+    lakers:      {img: 'Lakers-image.png',       label: 'Los Angeles, 2013.',           meta: 'The Dwight–Kobe collapse · Staples Center',    stamp: 'Apr 30, 2013 · Game 1 vs. Spurs · Staples Center'},
+    sixers:      {img: 'Wells-fargo-center.png', label: 'Philadelphia, the process.',   meta: 'After Game 7 · Wells Fargo Center',            stamp: 'Jun 20, 2021 · Game 7 collapse · Wells Fargo Center'},
+    clippers:    {img: '',                       label: 'LA, the second team.',         meta: 'Vol. II preview · Intuit Dome',                stamp: ''},
+    warriors:    {img: 'GSW-image.png',          label: 'Golden State, June 2019.',     meta: 'Durant Achilles · Oracle Arena',               stamp: 'Jun 10, 2019 · Durant Achilles · Oracle Arena'},
+    timberwolves:{img: 'Wolves-image.png',       label: 'Minnesota, October 2018.',     meta: 'The Butler practice · Target Center',          stamp: 'Oct 10, 2018 · The Butler practice · Target Center'},
+    bulls:       {img: '',                       label: 'Chicago.',                     meta: 'Coming Vol. II',                               stamp: ''}
   };
+  const entryStamp = document.getElementById('entry-stamp');
+  // Initialize with Brooklyn so the slug fades in alongside the hero on first reveal
+  if (entryStamp) entryStamp.textContent = teamHeroes.brooklyn.stamp;
 
   // Stage 1: 3-card carousel. Each card drifts ~5.4s; we trigger the next ~1s before its drift
   // ends so the crossfade overlaps and motion never sits still. Total ≈ 13.5s.
@@ -1837,6 +1873,9 @@
         entryImage.style.backgroundImage = 'linear-gradient(135deg, #2a2218 0%, #1a1612 60%, #0e0a06 100%)';
         entryEl.dataset.team = team;
       }
+
+      // swap darkroom slug (empty string hides via :empty selector)
+      if (entryStamp) entryStamp.textContent = (hero && hero.stamp) ? hero.stamp : '';
 
       // update foot copy
       if (status === 'live') {
