@@ -207,9 +207,18 @@
     position:absolute;inset:0;z-index:1;
     background-image:url("brooklyn_hero.png");
     background-size:cover;background-position:center 32%;
+    background-color:#0e0a06;
     opacity:0;transform:scale(1.05);
     transition:opacity 2.2s ease, transform 9s ease, background-image 0s;
   }
+  /* Per-team focal-point tweaks — crops baked-in text from the top of Lakers
+     and Wolves PNGs, gives Clippers' portrait orientation a sane center. */
+  .entry-image[data-team="lakers"]{background-position:center 78%}
+  .entry-image[data-team="timberwolves"]{background-position:center 70%}
+  .entry-image[data-team="sixers"]{background-position:center 50%}
+  .entry-image[data-team="warriors"]{background-position:center 50%}
+  .entry-image[data-team="houston"]{background-position:center 60%}
+  .entry-image[data-team="clippers"]{background-size:contain;background-position:right center;background-repeat:no-repeat}
   .entry[data-stage="reveal"] .entry-image,
   .entry[data-stage="picked"] .entry-image,
   .entry[data-stage="swap"] .entry-image{opacity:1;transform:scale(1)}
@@ -229,10 +238,10 @@
   .entry-stamp{
     position:absolute;left:32px;bottom:32px;z-index:4;
     font-family:var(--mono);font-size:10px;font-weight:500;
-    letter-spacing:.32em;text-transform:uppercase;
+    letter-spacing:.32em;text-transform:uppercase;line-height:1.7;
     color:rgba(241,236,222,.86);
-    padding:10px 16px;
-    background:rgba(8,12,20,.42);
+    padding:12px 16px;
+    background:rgba(8,12,20,.5);
     backdrop-filter:blur(10px) saturate(1.05);
     -webkit-backdrop-filter:blur(10px) saturate(1.05);
     border:1px solid rgba(241,236,222,.12);
@@ -241,6 +250,7 @@
     opacity:0;transition:opacity 1.4s ease;
     pointer-events:none;
     max-width:min(72vw, 680px);
+    white-space:pre-line;
   }
   .entry-stamp::before{
     content:"";display:inline-block;vertical-align:middle;
@@ -520,7 +530,8 @@
   .adv-hero-mark{
     align-self:center;text-align:center;padding:32px 24px;
     border:1px solid var(--rule);border-radius:4px;
-    background:rgba(251,245,233,.5);
+    background:rgba(8,12,20,.55);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   }
   .adv-hero-mark-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:12px}
   .adv-hero-mark-title{font-family:var(--serif);font-size:34px;font-weight:300;letter-spacing:-.01em;color:var(--ink);font-variation-settings:"opsz" 144}
@@ -960,22 +971,27 @@
 
   /* ── Decision card ── */
   .decision{
-    margin-top:34px;padding:28px 30px;background:#fbf5e9;
+    margin-top:34px;padding:28px 30px;
+    background:rgba(8,12,20,.62);
+    backdrop-filter:blur(14px) saturate(1.1);-webkit-backdrop-filter:blur(14px) saturate(1.1);
     border:1px solid var(--rule);border-left:3px solid var(--accent);
-    border-radius:2px;
+    border-radius:4px;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.7);
   }
-  .decision .dec-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .decision .dec-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent-soft);margin-bottom:10px}
   .decision .dec-q{font-family:var(--serif);font-weight:400;font-style:italic;font-size:21px;line-height:1.4;margin:0 0 22px;color:var(--ink)}
   .decision .opts{display:grid;gap:10px}
   .decision .opt{
     display:flex;flex-direction:column;gap:6px;
     text-align:left;cursor:pointer;
-    padding:14px 16px;background:#fff;border:1px solid var(--rule);
+    padding:14px 16px;
+    background:rgba(255,255,255,.03);
+    border:1px solid var(--rule);
     font-family:var(--sans);font-size:14.5px;line-height:1.5;color:var(--ink);
     border-radius:2px;transition:border-color .25s, background .25s, transform .15s;
   }
-  .decision .opt:hover{border-color:var(--accent);background:#fffaef;transform:translateX(2px)}
-  .decision .opt.selected{border-color:var(--accent);background:#fff4e3;border-left:3px solid var(--accent)}
+  .decision .opt:hover{border-color:var(--accent);background:rgba(91,141,239,.08);transform:translateX(2px)}
+  .decision .opt.selected{border-color:var(--accent);background:rgba(91,141,239,.14);border-left:3px solid var(--accent)}
   .decision .opt-label{font-weight:500}
   .decision .opt-feedback{
     display:none;font-family:var(--serif);font-size:14.5px;line-height:1.55;
@@ -987,7 +1003,12 @@
   /* ── Side panel: Pulse / Ledger ── */
   .side{position:sticky;top:24px;display:flex;flex-direction:column;gap:24px}
   .panel{
-    background:#fbf5e9;border:1px solid var(--rule);padding:22px 22px 18px;border-radius:2px;
+    background:rgba(8,12,20,.62);
+    backdrop-filter:blur(14px) saturate(1.1);-webkit-backdrop-filter:blur(14px) saturate(1.1);
+    border:1px solid var(--rule);
+    border-top:1px solid var(--accent);
+    padding:22px 22px 18px;border-radius:4px;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.7);
   }
   .panel .panel-head{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
   .panel .panel-head .live{color:var(--accent)}
@@ -1787,17 +1808,18 @@
   const scenFoot = document.getElementById('scen-foot');
   const scenButtons = document.querySelectorAll('.scen');
 
-  // Per-team hero images. Stamps are burned over the hero as a darkroom slug
-  // (location · timestamp · date). Clippers ships with text already baked into
-  // the PNG, so its stamp stays empty and we fall to a neutral gradient hero.
+  // Per-team hero images. Stamps are burned over the hero as a darkroom slug —
+  // two lines: line 1 = date · time · weather, line 2 = incident · location.
+  // Clippers PNG ships with its own baked-in chrome and runs portrait-aspect,
+  // so it keeps an empty stamp and gets its own contained background sizing.
   const teamHeroes = {
-    brooklyn:    {img: 'brooklyn_hero.png',      label: 'Brooklyn, the morning after.', meta: 'Jun 20, 2021 · 6:30 AM ET · Atlantic Avenue', stamp: 'Jun 20, 2021 · 6:30 AM ET · Atlantic Avenue'},
-    houston:     {img: 'Toyota-Center.png',      label: 'Houston, the open file.',      meta: 'Eve of Game 5 vs. LA · Toyota Center',         stamp: 'Apr 30, 2026 · Eve of Game 5 · Toyota Center'},
-    lakers:      {img: 'Lakers-image.png',       label: 'Los Angeles, 2013.',           meta: 'The Dwight–Kobe collapse · Staples Center',    stamp: 'Apr 30, 2013 · Game 1 vs. Spurs · Staples Center'},
-    sixers:      {img: 'Wells-fargo-center.png', label: 'Philadelphia, the process.',   meta: 'After Game 7 · Wells Fargo Center',            stamp: 'Jun 20, 2021 · Game 7 collapse · Wells Fargo Center'},
-    clippers:    {img: '',                       label: 'LA, the second team.',         meta: 'Vol. II preview · Intuit Dome',                stamp: ''},
-    warriors:    {img: 'GSW-image.png',          label: 'Golden State, June 2019.',     meta: 'Durant Achilles · Oracle Arena',               stamp: 'Jun 10, 2019 · Durant Achilles · Oracle Arena'},
-    timberwolves:{img: 'Wolves-image.png',       label: 'Minnesota, October 2018.',     meta: 'The Butler practice · Target Center',          stamp: 'Oct 10, 2018 · The Butler practice · Target Center'},
+    brooklyn:    {img: 'brooklyn_hero.png',      label: 'Brooklyn, the morning after.', meta: 'Jun 20, 2021 · 6:30 AM ET · Atlantic Avenue', stamp: 'Jun 20, 2021 · 6:30 AM ET · 68°F overcast\nMorning after Game 7 · Atlantic Avenue'},
+    houston:     {img: 'Toyota-Center.png',      label: 'Houston, the open file.',      meta: 'Eve of Game 5 vs. LA · Toyota Center',         stamp: 'Apr 30, 2026 · 10:42 PM CT · 74°F clear\nEve of Game 5 vs. Lakers · Toyota Center'},
+    lakers:      {img: 'Lakers-image.png',       label: 'Los Angeles, 2013.',           meta: 'The Dwight–Kobe collapse · Staples Center',    stamp: 'Apr 30, 2013 · 6:08 PM PT · 71°F clear\nGame 1 vs. Spurs · Staples Center'},
+    sixers:      {img: 'Wells-fargo-center.png', label: 'Philadelphia, the process.',   meta: 'After Game 7 · Wells Fargo Center',            stamp: 'Jun 20, 2021 · 11:47 PM ET · 76°F humid\nGame 7 collapse vs. Hawks · Wells Fargo Center'},
+    clippers:    {img: 'Clippers.png',           label: 'LA, the second team.',         meta: 'Vol. II preview · Intuit Dome',                stamp: ''},
+    warriors:    {img: 'GSW-image.png',          label: 'Golden State, June 2019.',     meta: 'Durant Achilles · Oracle Arena',               stamp: 'Jun 10, 2019 · 9:51 PM PT · 62°F clear\nDurant Achilles, Game 5 Finals · Oracle Arena'},
+    timberwolves:{img: 'Wolves-image.png',       label: 'Minnesota, October 2018.',     meta: 'The Butler practice · Target Center',          stamp: 'Oct 10, 2018 · 11:14 AM CT · 51°F overcast\nThe Butler practice · Target Center'},
     bulls:       {img: '',                       label: 'Chicago.',                     meta: 'Coming Vol. II',                               stamp: ''}
   };
   const entryStamp = document.getElementById('entry-stamp');
@@ -1868,11 +1890,16 @@
       if (hero && hero.img) {
         entryImage.style.backgroundImage = `url("${hero.img}")`;
         entryEl.dataset.team = team;
+        entryImage.dataset.team = team;
       } else {
         // no image yet — show paper-over-shadow placeholder
         entryImage.style.backgroundImage = 'linear-gradient(135deg, #2a2218 0%, #1a1612 60%, #0e0a06 100%)';
         entryEl.dataset.team = team;
+        entryImage.dataset.team = team;
       }
+      // sync body so the team palette (--accent, --gold-soft) propagates to
+      // chair-hint italic, "Choose a room" eyebrow, LIVE tag border, etc.
+      document.body.dataset.team = team;
 
       // swap darkroom slug (empty string hides via :empty selector)
       if (entryStamp) entryStamp.textContent = (hero && hero.stamp) ? hero.stamp : '';
