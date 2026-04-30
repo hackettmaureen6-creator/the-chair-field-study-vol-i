@@ -1798,32 +1798,28 @@
 
 <script>
   // ============================================================
-  // DIAG — on-page error surface so we can see JS faults without dev tools.
+  // DIAG — corner pill that only flashes on click events or JS errors.
   // Remove once interactivity is confirmed stable.
   // ============================================================
+  var diagPill;
   (function(){
-    var bar = document.createElement('div');
-    bar.id = 'diag-bar';
-    bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;padding:10px 16px;font:500 12px/1.4 ui-monospace,Menlo,monospace;letter-spacing:.04em;color:#fff;background:#7a1f1f;display:none;text-align:left;border-bottom:1px solid #f48b8b';
-    document.body.insertBefore(bar, document.body.firstChild);
+    diagPill = document.createElement('div');
+    diagPill.id = 'diag-pill';
+    diagPill.style.cssText = 'position:fixed;bottom:14px;right:14px;z-index:9999;padding:6px 12px;font:500 10px/1.3 ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:rgba(8,12,20,.85);border:1px solid rgba(255,255,255,.18);border-radius:2px;display:none;backdrop-filter:blur(6px);max-width:60vw';
+    document.body.appendChild(diagPill);
     window.addEventListener('error', function(e){
-      bar.style.display = 'block';
-      bar.textContent = 'JS ERR: ' + (e.message || e.error) + ' — ' + (e.filename || '').split('/').pop() + ':' + e.lineno;
-    });
-    window.addEventListener('unhandledrejection', function(e){
-      bar.style.display = 'block';
-      bar.textContent = 'PROMISE ERR: ' + (e.reason && e.reason.message ? e.reason.message : e.reason);
+      diagPill.style.background = 'rgba(122,31,31,.95)';
+      diagPill.style.display = 'block';
+      diagPill.textContent = 'ERR: ' + (e.message || e.error) + ' @ ' + (e.filename||'').split('/').pop() + ':' + e.lineno;
     });
   })();
-  // Tag a heartbeat after init so we can confirm the script ran end-to-end.
   function diagOK(label){
-    var hb = document.getElementById('diag-bar');
-    if (!hb || hb.style.display === 'block') return;
-    hb.style.background = '#1f4a2a';
-    hb.style.borderBottomColor = '#5cd1a3';
-    hb.style.display = 'block';
-    hb.textContent = 'JS OK · ' + label;
-    setTimeout(function(){ if (hb.textContent.indexOf('JS OK') === 0) hb.style.display = 'none'; }, 4000);
+    if (!diagPill || diagPill.style.background.indexOf('122') > -1) return;
+    diagPill.style.background = 'rgba(31,74,42,.92)';
+    diagPill.style.display = 'block';
+    diagPill.textContent = label;
+    clearTimeout(diagPill._t);
+    diagPill._t = setTimeout(function(){ diagPill.style.display = 'none'; }, 1800);
   }
 
   // ============================================================
@@ -2201,12 +2197,12 @@
   window.addEventListener('scroll', updateArc, {passive: true});
   updateArc();
 
-  // Heartbeat — confirms the entire script ran without throwing AND surfaces
-  // a quick visual that listeners are attached. Click the chair / a scen row
-  // and the bar will report which path fired.
-  diagOK('init complete · ' + scenButtons.length + ' scen buttons · chair=' + (!!chairCta));
+  // Click reporters — the pill stays hidden until you actually click the chair
+  // or a scenario row, then flashes briefly so we can see whether listeners
+  // fire. Errors override with red. Init heartbeat removed; we already know
+  // JS runs end-to-end from the prior pass.
   if (chairCta) chairCta.addEventListener('click', function(){ diagOK('chair clicked'); }, true);
-  scenButtons.forEach(function(b){ b.addEventListener('click', function(){ diagOK('scen clicked: ' + b.dataset.team); }, true); });
+  scenButtons.forEach(function(b){ b.addEventListener('click', function(){ diagOK('scen: ' + b.dataset.team); }, true); });
 </script>
 
 <script data-pplx-inline-edit>
